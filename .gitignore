@@ -1,0 +1,7 @@
+.DS_Store
+
+# Home Assistant runtime data and credentials
+home-assistant_v2.db*
+.storage/
+secrets.yaml
+*.log

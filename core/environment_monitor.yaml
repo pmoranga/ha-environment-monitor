@@ -1,0 +1,438 @@
+# Home Assistant package: Environment Monitor
+#
+# All limits are Helpers, adjustable from Settings > Devices & services > Helpers
+# or from the "Configuração" card in dashboard.yaml.
+#
+# The two input_text helpers below are the only places where source entity IDs
+# are configured. Leave the example values until the real sensors are known.
+
+input_text:
+  environment_monitor_temperature_source:
+    name: Fonte de temperatura
+    icon: mdi:thermometer
+    max: 255
+
+  environment_monitor_humidity_source:
+    name: Fonte de umidade
+    icon: mdi:water-percent
+    max: 255
+
+input_boolean:
+  # This starts off for a new installation and restores the user's selection
+  # across restarts. It gates all four notification automations.
+  environment_monitor_alerts_enabled:
+    name: Alertas ativados
+    icon: mdi:bell-outline
+
+  # Internal marker. Keep this on after initial setup so Helper values restore
+  # normally after restarts.
+  environment_monitor_defaults_initialized:
+    name: Environment Monitor — defaults initialized
+    icon: mdi:check-circle-outline
+
+input_number:
+  # Defaults use the 16–20 °C safe-sleep comfort range for a baby's room.
+  # Temperature bands: low < low_limit; optimal_min..optimal_max; high > high_limit.
+  environment_monitor_temperature_low_limit:
+    name: Temperatura — limite baixo
+    icon: mdi:thermometer-low
+    min: -40
+    max: 80
+    step: 0.1
+    unit_of_measurement: °C
+
+  environment_monitor_temperature_optimal_min:
+    name: Temperatura — ótimo mínimo
+    icon: mdi:thermometer-check
+    min: -40
+    max: 80
+    step: 0.1
+    unit_of_measurement: °C
+
+  environment_monitor_temperature_optimal_max:
+    name: Temperatura — ótimo máximo
+    icon: mdi:thermometer-check
+    min: -40
+    max: 80
+    step: 0.1
+    unit_of_measurement: °C
+
+  environment_monitor_temperature_high_limit:
+    name: Temperatura — limite alto
+    icon: mdi:thermometer-high
+    min: -40
+    max: 80
+    step: 0.1
+    unit_of_measurement: °C
+
+  environment_monitor_temperature_chart_min:
+    name: Gráfico temperatura — mínimo
+    icon: mdi:chart-bell-curve
+    min: -40
+    max: 80
+    step: 1
+    unit_of_measurement: °C
+
+  environment_monitor_temperature_chart_max:
+    name: Gráfico temperatura — máximo
+    icon: mdi:chart-bell-curve
+    min: -40
+    max: 100
+    step: 1
+    unit_of_measurement: °C
+
+  # Defaults use a 35–50% comfortable indoor humidity range for children.
+  # Humidity bands: low < low_limit; optimal_min..optimal_max; high > high_limit.
+  environment_monitor_humidity_low_limit:
+    name: Umidade — limite baixo
+    icon: mdi:water-alert
+    min: 0
+    max: 100
+    step: 1
+    unit_of_measurement: "%"
+
+  environment_monitor_humidity_optimal_min:
+    name: Umidade — ótimo mínimo
+    icon: mdi:water-check
+    min: 0
+    max: 100
+    step: 1
+    unit_of_measurement: "%"
+
+  environment_monitor_humidity_optimal_max:
+    name: Umidade — ótimo máximo
+    icon: mdi:water-check
+    min: 0
+    max: 100
+    step: 1
+    unit_of_measurement: "%"
+
+  environment_monitor_humidity_high_limit:
+    name: Umidade — limite alto
+    icon: mdi:water-plus
+    min: 0
+    max: 100
+    step: 1
+    unit_of_measurement: "%"
+
+  environment_monitor_temperature_high_alert_minutes:
+    name: Alerta temperatura alta — minutos
+    icon: mdi:timer-alert
+    min: 1
+    max: 120
+    step: 1
+    unit_of_measurement: min
+
+  environment_monitor_temperature_low_alert_minutes:
+    name: Alerta temperatura baixa — minutos
+    icon: mdi:timer-alert
+    min: 1
+    max: 120
+    step: 1
+    unit_of_measurement: min
+
+  environment_monitor_humidity_high_alert_minutes:
+    name: Alerta umidade alta — minutos
+    icon: mdi:timer-alert
+    min: 1
+    max: 120
+    step: 1
+    unit_of_measurement: min
+
+  environment_monitor_humidity_low_alert_minutes:
+    name: Alerta umidade baixa — minutos
+    icon: mdi:timer-alert
+    min: 1
+    max: 120
+    step: 1
+    unit_of_measurement: min
+
+template:
+  - sensor:
+      - name: Environment Temperature Status
+        unique_id: environment_monitor_temperature_status
+        icon: >-
+          {% set status = this.state %}
+          {% if status == 'optimal' %} mdi:thermometer-check
+          {% elif status == 'acceptable' %} mdi:thermometer
+          {% elif status == 'low' %} mdi:thermometer-low
+          {% elif status == 'high' %} mdi:thermometer-high
+          {% else %} mdi:thermometer-off
+          {% endif %}
+        state: >-
+          {% set source = states('input_text.environment_monitor_temperature_source') %}
+          {% set value = states(source) | float(none) %}
+          {% set low = states('input_number.environment_monitor_temperature_low_limit') | float(14) %}
+          {% set optimal_min = states('input_number.environment_monitor_temperature_optimal_min') | float(16) %}
+          {% set optimal_max = states('input_number.environment_monitor_temperature_optimal_max') | float(20) %}
+          {% set high = states('input_number.environment_monitor_temperature_high_limit') | float(22) %}
+          {% if value is none %}
+            unavailable
+          {% elif value < low %}
+            low
+          {% elif value > high %}
+            high
+          {% elif optimal_min <= value <= optimal_max %}
+            optimal
+          {% else %}
+            acceptable
+          {% endif %}
+        attributes:
+          source: "{{ states('input_text.environment_monitor_temperature_source') }}"
+          low_limit: "{{ states('input_number.environment_monitor_temperature_low_limit') }}"
+          optimal_min: "{{ states('input_number.environment_monitor_temperature_optimal_min') }}"
+          optimal_max: "{{ states('input_number.environment_monitor_temperature_optimal_max') }}"
+          high_limit: "{{ states('input_number.environment_monitor_temperature_high_limit') }}"
+
+      - name: Environment Humidity Status
+        unique_id: environment_monitor_humidity_status
+        icon: >-
+          {% set status = this.state %}
+          {% if status == 'optimal' %} mdi:water-check
+          {% elif status == 'acceptable' %} mdi:water-percent
+          {% elif status == 'low' %} mdi:water-alert
+          {% elif status == 'high' %} mdi:water-plus
+          {% else %} mdi:water-off
+          {% endif %}
+        state: >-
+          {% set source = states('input_text.environment_monitor_humidity_source') %}
+          {% set value = states(source) | float(none) %}
+          {% set low = states('input_number.environment_monitor_humidity_low_limit') | float(30) %}
+          {% set optimal_min = states('input_number.environment_monitor_humidity_optimal_min') | float(35) %}
+          {% set optimal_max = states('input_number.environment_monitor_humidity_optimal_max') | float(50) %}
+          {% set high = states('input_number.environment_monitor_humidity_high_limit') | float(60) %}
+          {% if value is none %}
+            unavailable
+          {% elif value < low %}
+            low
+          {% elif value > high %}
+            high
+          {% elif optimal_min <= value <= optimal_max %}
+            optimal
+          {% else %}
+            acceptable
+          {% endif %}
+        attributes:
+          source: "{{ states('input_text.environment_monitor_humidity_source') }}"
+          low_limit: "{{ states('input_number.environment_monitor_humidity_low_limit') }}"
+          optimal_min: "{{ states('input_number.environment_monitor_humidity_optimal_min') }}"
+          optimal_max: "{{ states('input_number.environment_monitor_humidity_optimal_max') }}"
+          high_limit: "{{ states('input_number.environment_monitor_humidity_high_limit') }}"
+
+      - name: Environment Overall Status
+        unique_id: environment_monitor_overall_status
+        icon: mdi:chart-timeline-variant
+        state: >-
+          {% set temperature = states('sensor.environment_temperature_status') %}
+          {% set humidity = states('sensor.environment_humidity_status') %}
+          {% if temperature == 'unavailable' or humidity == 'unavailable' %}
+            unavailable
+          {% elif temperature in ['low', 'high'] %}
+            {{ temperature }}
+          {% elif humidity in ['low', 'high'] %}
+            {{ humidity }}
+          {% elif temperature == 'acceptable' or humidity == 'acceptable' %}
+            acceptable
+          {% else %}
+            optimal
+          {% endif %}
+        attributes:
+          temperature_status: "{{ states('sensor.environment_temperature_status') }}"
+          humidity_status: "{{ states('sensor.environment_humidity_status') }}"
+
+automation:
+  # Applies example values only on the first start. Values entered later in
+  # the UI are restored by Home Assistant and are never overwritten here.
+  - id: environment_monitor_initialize_defaults
+    alias: Environment Monitor — initialize defaults
+    mode: single
+    triggers:
+      - trigger: homeassistant
+        event: start
+    conditions:
+      - condition: state
+        entity_id: input_boolean.environment_monitor_defaults_initialized
+        state: "off"
+    actions:
+      - action: input_text.set_value
+        target:
+          entity_id: input_text.environment_monitor_temperature_source
+        data:
+          value: sensor.example_temperature
+      - action: input_text.set_value
+        target:
+          entity_id: input_text.environment_monitor_humidity_source
+        data:
+          value: sensor.example_humidity
+      - action: input_number.set_value
+        target:
+          entity_id: input_number.environment_monitor_temperature_low_limit
+        data:
+          value: 14
+      - action: input_number.set_value
+        target:
+          entity_id: input_number.environment_monitor_temperature_optimal_min
+        data:
+          value: 16
+      - action: input_number.set_value
+        target:
+          entity_id: input_number.environment_monitor_temperature_optimal_max
+        data:
+          value: 20
+      - action: input_number.set_value
+        target:
+          entity_id: input_number.environment_monitor_temperature_high_limit
+        data:
+          value: 22
+      - action: input_number.set_value
+        target:
+          entity_id: input_number.environment_monitor_temperature_chart_min
+        data:
+          value: 10
+      - action: input_number.set_value
+        target:
+          entity_id: input_number.environment_monitor_temperature_chart_max
+        data:
+          value: 30
+      - action: input_number.set_value
+        target:
+          entity_id: input_number.environment_monitor_humidity_low_limit
+        data:
+          value: 30
+      - action: input_number.set_value
+        target:
+          entity_id: input_number.environment_monitor_humidity_optimal_min
+        data:
+          value: 35
+      - action: input_number.set_value
+        target:
+          entity_id: input_number.environment_monitor_humidity_optimal_max
+        data:
+          value: 50
+      - action: input_number.set_value
+        target:
+          entity_id: input_number.environment_monitor_humidity_high_limit
+        data:
+          value: 60
+      - action: input_number.set_value
+        target:
+          entity_id: input_number.environment_monitor_temperature_high_alert_minutes
+        data:
+          value: 10
+      - action: input_number.set_value
+        target:
+          entity_id: input_number.environment_monitor_temperature_low_alert_minutes
+        data:
+          value: 15
+      - action: input_number.set_value
+        target:
+          entity_id: input_number.environment_monitor_humidity_high_alert_minutes
+        data:
+          value: 15
+      - action: input_number.set_value
+        target:
+          entity_id: input_number.environment_monitor_humidity_low_alert_minutes
+        data:
+          value: 15
+      - action: input_boolean.turn_off
+        target:
+          entity_id: input_boolean.environment_monitor_alerts_enabled
+      - action: input_boolean.turn_on
+        target:
+          entity_id: input_boolean.environment_monitor_defaults_initialized
+
+  - id: environment_monitor_temperature_high
+    alias: Environment Monitor — temperature high
+    mode: single
+    triggers:
+      - trigger: template
+        value_template: "{{ is_state('sensor.environment_temperature_status', 'high') }}"
+        for:
+          minutes: "{{ states('input_number.environment_monitor_temperature_high_alert_minutes') | int(10) }}"
+    conditions:
+      - condition: state
+        entity_id: input_boolean.environment_monitor_alerts_enabled
+        state: "on"
+      - condition: state
+        entity_id: sensor.environment_temperature_status
+        state: high
+    actions:
+      - action: persistent_notification.create
+        data:
+          notification_id: environment_monitor_temperature_high
+          title: Environment Monitor — temperature high
+          message: >-
+            {{ states(states('input_text.environment_monitor_temperature_source')) }} °C
+            is above {{ states('input_number.environment_monitor_temperature_high_limit') }} °C.
+
+  - id: environment_monitor_temperature_low
+    alias: Environment Monitor — temperature low
+    mode: single
+    triggers:
+      - trigger: template
+        value_template: "{{ is_state('sensor.environment_temperature_status', 'low') }}"
+        for:
+          minutes: "{{ states('input_number.environment_monitor_temperature_low_alert_minutes') | int(15) }}"
+    conditions:
+      - condition: state
+        entity_id: input_boolean.environment_monitor_alerts_enabled
+        state: "on"
+      - condition: state
+        entity_id: sensor.environment_temperature_status
+        state: low
+    actions:
+      - action: persistent_notification.create
+        data:
+          notification_id: environment_monitor_temperature_low
+          title: Environment Monitor — temperature low
+          message: >-
+            {{ states(states('input_text.environment_monitor_temperature_source')) }} °C
+            is below {{ states('input_number.environment_monitor_temperature_low_limit') }} °C.
+
+  - id: environment_monitor_humidity_high
+    alias: Environment Monitor — humidity high
+    mode: single
+    triggers:
+      - trigger: template
+        value_template: "{{ is_state('sensor.environment_humidity_status', 'high') }}"
+        for:
+          minutes: "{{ states('input_number.environment_monitor_humidity_high_alert_minutes') | int(15) }}"
+    conditions:
+      - condition: state
+        entity_id: input_boolean.environment_monitor_alerts_enabled
+        state: "on"
+      - condition: state
+        entity_id: sensor.environment_humidity_status
+        state: high
+    actions:
+      - action: persistent_notification.create
+        data:
+          notification_id: environment_monitor_humidity_high
+          title: Environment Monitor — humidity high
+          message: >-
+            {{ states(states('input_text.environment_monitor_humidity_source')) }}%
+            is above {{ states('input_number.environment_monitor_humidity_high_limit') }}%.
+
+  - id: environment_monitor_humidity_low
+    alias: Environment Monitor — humidity low
+    mode: single
+    triggers:
+      - trigger: template
+        value_template: "{{ is_state('sensor.environment_humidity_status', 'low') }}"
+        for:
+          minutes: "{{ states('input_number.environment_monitor_humidity_low_alert_minutes') | int(15) }}"
+    conditions:
+      - condition: state
+        entity_id: input_boolean.environment_monitor_alerts_enabled
+        state: "on"
+      - condition: state
+        entity_id: sensor.environment_humidity_status
+        state: low
+    actions:
+      - action: persistent_notification.create
+        data:
+          notification_id: environment_monitor_humidity_low
+          title: Environment Monitor — humidity low
+          message: >-
+            {{ states(states('input_text.environment_monitor_humidity_source')) }}%
+            is below {{ states('input_number.environment_monitor_humidity_low_limit') }}%.
