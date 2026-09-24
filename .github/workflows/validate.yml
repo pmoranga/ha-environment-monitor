@@ -10,6 +10,7 @@ permissions:
 
 jobs:
   validate:
+    name: Python and JSON
     runs-on: ubuntu-latest
 
     steps:
@@ -33,3 +34,26 @@ jobs:
           python -m json.tool custom_components/environment_monitor/strings.json >/dev/null
           python -m json.tool custom_components/environment_monitor/translations/en.json >/dev/null
           python -m json.tool hacs.json >/dev/null
+
+  hacs:
+    name: HACS
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Validate with HACS
+        uses: hacs/action@main
+        with:
+          category: integration
+          ignore: brands
+
+  hassfest:
+    name: Hassfest
+    runs-on: ubuntu-latest
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v4
+
+      - name: Validate with Hassfest
+        uses: home-assistant/actions/hassfest@master
