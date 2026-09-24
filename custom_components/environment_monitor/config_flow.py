@@ -4,8 +4,9 @@ from typing import Any
 
 import voluptuous as vol
 
+from homeassistant.components.sensor import SensorDeviceClass
 from homeassistant.config_entries import ConfigFlow, ConfigFlowResult, OptionsFlowWithReload
-from homeassistant.const import CONF_NAME, SensorDeviceClass
+from homeassistant.const import CONF_NAME
 from homeassistant.helpers.selector import (
     BooleanSelector,
     EntitySelector,
