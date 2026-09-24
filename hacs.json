@@ -1,5 +1,4 @@
 {
   "homeassistant": "2025.9.0",
-  "name": "Environment Monitor",
-  "render_readme": true
+  "name": "Environment Monitor"
 }
