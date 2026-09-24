@@ -3,6 +3,8 @@ name: Validate Environment Monitor
 on:
   pull_request:
   push:
+    branches:
+      - main
   workflow_dispatch:
 
 permissions:
@@ -62,8 +64,6 @@ jobs:
 
       - name: Validate with HACS
         id: hacs
-        # Remove once https://github.com/hacs/integration/issues/5497 is fixed.
-        continue-on-error: true
         uses: hacs/action@main
         with:
           category: integration
@@ -77,12 +77,8 @@ jobs:
             echo
             echo "| Check | Result |"
             echo "| --- | --- |"
-            echo "| HACS repository | ${{ steps.hacs.outcome == 'success' && '✅ Passed' || '⚠️ Upstream validator issue' }} |"
+            echo "| HACS repository | ${{ steps.hacs.outcome == 'success' && '✅ Passed' || '❌ Failed' }} |"
           } >> "$GITHUB_STEP_SUMMARY"
-          if [[ "${{ steps.hacs.outcome }}" != "success" ]]; then
-            echo >> "$GITHUB_STEP_SUMMARY"
-            echo "See [hacs/integration#5497](https://github.com/hacs/integration/issues/5497)." >> "$GITHUB_STEP_SUMMARY"
-          fi
 
   hassfest:
     name: Hassfest
