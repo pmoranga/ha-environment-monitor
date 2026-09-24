@@ -1,0 +1,234 @@
+# Dashboard card for HACS.
+# Required frontend cards: ApexCharts Card, Config Template Card, Mushroom.
+#
+# Add this YAML as a Manual card. The band limits update immediately whenever
+# the input_number Helpers in environment_monitor.yaml are changed.
+
+type: vertical-stack
+cards:
+  - type: custom:config-template-card
+    entities:
+      - sensor.environment_overall_status
+      - sensor.environment_temperature_status
+      - sensor.environment_humidity_status
+      - input_text.environment_monitor_temperature_source
+      - input_text.environment_monitor_humidity_source
+      - "${states['input_text.environment_monitor_temperature_source'].state}"
+      - "${states['input_text.environment_monitor_humidity_source'].state}"
+    variables:
+      TEMPERATURE_ENTITY: states['input_text.environment_monitor_temperature_source'].state
+      HUMIDITY_ENTITY: states['input_text.environment_monitor_humidity_source'].state
+      OVERALL_STATUS: states['sensor.environment_overall_status'].state
+    card:
+      type: custom:mushroom-template-card
+      primary: Environment Monitor
+      secondary: "${`Temperature: ${states[TEMPERATURE_ENTITY]?.state ?? '—'} °C · Humidity: ${states[HUMIDITY_ENTITY]?.state ?? '—'}% · Status: ${OVERALL_STATUS}` }"
+      icon: mdi:chart-timeline-variant
+      icon_color: "${OVERALL_STATUS === 'optimal' ? 'green' : OVERALL_STATUS === 'acceptable' ? 'amber' : OVERALL_STATUS === 'low' ? 'blue' : OVERALL_STATUS === 'high' ? 'red' : 'grey'}"
+
+  - type: entities
+    title: Configuration
+    show_header_toggle: false
+    entities:
+      - entity: input_text.environment_monitor_temperature_source
+        name: Temperature source entity_id
+      - entity: input_text.environment_monitor_humidity_source
+        name: Humidity source entity_id
+      - type: section
+        label: Temperature bands
+      - input_number.environment_monitor_temperature_low_limit
+      - input_number.environment_monitor_temperature_optimal_min
+      - input_number.environment_monitor_temperature_optimal_max
+      - input_number.environment_monitor_temperature_high_limit
+      - input_number.environment_monitor_temperature_chart_min
+      - input_number.environment_monitor_temperature_chart_max
+      - type: section
+        label: Humidity bands
+      - input_number.environment_monitor_humidity_low_limit
+      - input_number.environment_monitor_humidity_optimal_min
+      - input_number.environment_monitor_humidity_optimal_max
+      - input_number.environment_monitor_humidity_high_limit
+      - type: section
+        label: Alert delays
+      - entity: input_boolean.environment_monitor_alerts_enabled
+        name: Alerts enabled
+      - input_number.environment_monitor_temperature_high_alert_minutes
+      - input_number.environment_monitor_temperature_low_alert_minutes
+      - input_number.environment_monitor_humidity_high_alert_minutes
+      - input_number.environment_monitor_humidity_low_alert_minutes
+
+  - type: custom:config-template-card
+    entities:
+      - input_text.environment_monitor_temperature_source
+      - input_number.environment_monitor_temperature_chart_min
+      - input_number.environment_monitor_temperature_chart_max
+      - input_number.environment_monitor_temperature_low_limit
+      - input_number.environment_monitor_temperature_optimal_min
+      - input_number.environment_monitor_temperature_optimal_max
+      - input_number.environment_monitor_temperature_high_limit
+    variables:
+      TEMPERATURE_ENTITY: states['input_text.environment_monitor_temperature_source'].state
+      CHART_MIN: Number(states['input_number.environment_monitor_temperature_chart_min'].state)
+      CHART_MAX: Number(states['input_number.environment_monitor_temperature_chart_max'].state)
+      LOW_LIMIT: Number(states['input_number.environment_monitor_temperature_low_limit'].state)
+      OPTIMAL_MIN: Number(states['input_number.environment_monitor_temperature_optimal_min'].state)
+      OPTIMAL_MAX: Number(states['input_number.environment_monitor_temperature_optimal_max'].state)
+      HIGH_LIMIT: Number(states['input_number.environment_monitor_temperature_high_limit'].state)
+    card:
+      type: custom:apexcharts-card
+      graph_span: 24h
+      experimental:
+        color_threshold: true
+      header:
+        show: true
+        title: Temperature — last 24 hours
+        show_states: true
+        colorize_states: true
+      now:
+        show: true
+        label: Now
+      yaxis:
+        - min: "${CHART_MIN}"
+          max: "${CHART_MAX}"
+          decimals: 1
+      apex_config:
+        chart:
+          height: 280
+        annotations:
+          yaxis:
+            - y: "${CHART_MIN}"
+              y2: "${LOW_LIMIT}"
+              fillColor: "#2196F3"
+              opacity: 0.16
+              label:
+                text: "${`Low <${LOW_LIMIT}°C` }"
+                style:
+                  background: "#2196F3"
+            - y: "${LOW_LIMIT}"
+              y2: "${OPTIMAL_MIN}"
+              fillColor: "#FBC02D"
+              opacity: 0.16
+            - y: "${OPTIMAL_MIN}"
+              y2: "${OPTIMAL_MAX}"
+              fillColor: "#4CAF50"
+              opacity: 0.18
+              label:
+                text: "${`Optimal ${OPTIMAL_MIN}–${OPTIMAL_MAX}°C` }"
+                style:
+                  background: "#4CAF50"
+            - y: "${OPTIMAL_MAX}"
+              y2: "${HIGH_LIMIT}"
+              fillColor: "#FBC02D"
+              opacity: 0.16
+            - y: "${HIGH_LIMIT}"
+              y2: "${CHART_MAX}"
+              fillColor: "#F44336"
+              opacity: 0.16
+              label:
+                text: "${`High >${HIGH_LIMIT}°C` }"
+                style:
+                  background: "#F44336"
+      series:
+        - entity: "${TEMPERATURE_ENTITY}"
+          name: Temperature
+          type: line
+          stroke_width: 3
+          show:
+            header_color_threshold: true
+          color_threshold:
+            - value: "${CHART_MIN}"
+              color: "#2196F3"
+            - value: "${LOW_LIMIT}"
+              color: "#FBC02D"
+            - value: "${OPTIMAL_MIN}"
+              color: "#4CAF50"
+            - value: "${OPTIMAL_MAX}"
+              color: "#FBC02D"
+            - value: "${HIGH_LIMIT}"
+              color: "#F44336"
+
+  - type: custom:config-template-card
+    entities:
+      - input_text.environment_monitor_humidity_source
+      - input_number.environment_monitor_humidity_low_limit
+      - input_number.environment_monitor_humidity_optimal_min
+      - input_number.environment_monitor_humidity_optimal_max
+      - input_number.environment_monitor_humidity_high_limit
+    variables:
+      HUMIDITY_ENTITY: states['input_text.environment_monitor_humidity_source'].state
+      LOW_LIMIT: Number(states['input_number.environment_monitor_humidity_low_limit'].state)
+      OPTIMAL_MIN: Number(states['input_number.environment_monitor_humidity_optimal_min'].state)
+      OPTIMAL_MAX: Number(states['input_number.environment_monitor_humidity_optimal_max'].state)
+      HIGH_LIMIT: Number(states['input_number.environment_monitor_humidity_high_limit'].state)
+    card:
+      type: custom:apexcharts-card
+      graph_span: 24h
+      experimental:
+        color_threshold: true
+      header:
+        show: true
+        title: Humidity — last 24 hours
+        show_states: true
+        colorize_states: true
+      now:
+        show: true
+        label: Now
+      yaxis:
+        - min: 0
+          max: 100
+          decimals: 0
+      apex_config:
+        chart:
+          height: 280
+        annotations:
+          yaxis:
+            - y: 0
+              y2: "${LOW_LIMIT}"
+              fillColor: "#FF5722"
+              opacity: 0.16
+              label:
+                text: "${`Low <${LOW_LIMIT}%` }"
+                style:
+                  background: "#FF5722"
+            - y: "${LOW_LIMIT}"
+              y2: "${OPTIMAL_MIN}"
+              fillColor: "#FBC02D"
+              opacity: 0.16
+            - y: "${OPTIMAL_MIN}"
+              y2: "${OPTIMAL_MAX}"
+              fillColor: "#4CAF50"
+              opacity: 0.18
+              label:
+                text: "${`Optimal ${OPTIMAL_MIN}–${OPTIMAL_MAX}%` }"
+                style:
+                  background: "#4CAF50"
+            - y: "${OPTIMAL_MAX}"
+              y2: "${HIGH_LIMIT}"
+              fillColor: "#FBC02D"
+              opacity: 0.16
+            - y: "${HIGH_LIMIT}"
+              y2: 100
+              fillColor: "#7E57C2"
+              opacity: 0.16
+              label:
+                text: "${`High >${HIGH_LIMIT}%` }"
+                style:
+                  background: "#7E57C2"
+      series:
+        - entity: "${HUMIDITY_ENTITY}"
+          name: Humidity
+          type: line
+          stroke_width: 3
+          show:
+            header_color_threshold: true
+          color_threshold:
+            - value: 0
+              color: "#FF5722"
+            - value: "${LOW_LIMIT}"
+              color: "#FBC02D"
+            - value: "${OPTIMAL_MIN}"
+              color: "#4CAF50"
+            - value: "${OPTIMAL_MAX}"
+              color: "#FBC02D"
+            - value: "${HIGH_LIMIT}"
+              color: "#7E57C2"

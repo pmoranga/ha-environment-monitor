@@ -1,0 +1,7 @@
+title: Environment Monitor
+views:
+  - title: Environment Monitor
+    path: environment-monitor
+    icon: mdi:chart-timeline-variant
+    cards:
+      - !include dashboards/environment-monitor-card.yaml
