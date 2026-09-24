@@ -1,0 +1,13 @@
+{
+  "domain": "environment_monitor",
+  "name": "Environment Monitor",
+  "codeowners": ["@pmoranga"],
+  "config_flow": true,
+  "dependencies": [],
+  "documentation": "https://github.com/pmoranga/ha-environment-monitor",
+  "integration_type": "helper",
+  "iot_class": "calculated",
+  "issue_tracker": "https://github.com/pmoranga/ha-environment-monitor/issues",
+  "requirements": [],
+  "version": "1.0.0"
+}

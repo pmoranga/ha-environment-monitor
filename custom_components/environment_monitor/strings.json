@@ -1,0 +1,147 @@
+{
+  "title": "Environment Monitor",
+  "config": {
+    "flow_title": "Environment Monitor: {name}",
+    "step": {
+      "user": {
+        "title": "Add an environmental zone",
+        "description": "Choose at least one sensor. Each zone is monitored independently.",
+        "data": {
+          "name": "Zone name",
+          "temperature_entity": "Temperature sensor (optional)",
+          "humidity_entity": "Humidity sensor (optional)",
+          "alerts_enabled": "Enable persistent notifications"
+        }
+      },
+      "temperature": {
+        "title": "Temperature settings",
+        "description": "Values are normalized to °C. The order must be: low ≤ optimal minimum ≤ optimal maximum ≤ high.",
+        "data": {
+          "temperature_low": "Low limit",
+          "temperature_optimal_min": "Optimal minimum",
+          "temperature_optimal_max": "Optimal maximum",
+          "temperature_high": "High limit",
+          "temperature_chart_min": "Suggested chart minimum",
+          "temperature_chart_max": "Suggested chart maximum",
+          "temperature_low_alert_minutes": "Low alert delay",
+          "temperature_high_alert_minutes": "High alert delay"
+        }
+      },
+      "humidity": {
+        "title": "Humidity settings",
+        "description": "The order must be: low ≤ optimal minimum ≤ optimal maximum ≤ high.",
+        "data": {
+          "humidity_low": "Low limit",
+          "humidity_optimal_min": "Optimal minimum",
+          "humidity_optimal_max": "Optimal maximum",
+          "humidity_high": "High limit",
+          "humidity_low_alert_minutes": "Low alert delay",
+          "humidity_high_alert_minutes": "High alert delay"
+        }
+      }
+    },
+    "error": {
+      "invalid_name": "Enter a name for this zone.",
+      "no_sources": "Select a temperature sensor, a humidity sensor, or both.",
+      "invalid_limits": "The limits are out of order or the chart range does not contain all limits."
+    },
+    "abort": {
+      "already_configured": "A zone with this name is already configured."
+    }
+  },
+  "options": {
+    "step": {
+      "init": {
+        "title": "Edit environmental zone",
+        "description": "Changing source sensors reloads this zone.",
+        "data": {
+          "name": "Zone name",
+          "temperature_entity": "Temperature sensor (optional)",
+          "humidity_entity": "Humidity sensor (optional)",
+          "alerts_enabled": "Enable persistent notifications"
+        }
+      },
+      "temperature": {
+        "title": "Temperature settings",
+        "description": "Values are normalized to °C. The order must be: low ≤ optimal minimum ≤ optimal maximum ≤ high.",
+        "data": {
+          "temperature_low": "Low limit",
+          "temperature_optimal_min": "Optimal minimum",
+          "temperature_optimal_max": "Optimal maximum",
+          "temperature_high": "High limit",
+          "temperature_chart_min": "Suggested chart minimum",
+          "temperature_chart_max": "Suggested chart maximum",
+          "temperature_low_alert_minutes": "Low alert delay",
+          "temperature_high_alert_minutes": "High alert delay"
+        }
+      },
+      "humidity": {
+        "title": "Humidity settings",
+        "description": "The order must be: low ≤ optimal minimum ≤ optimal maximum ≤ high.",
+        "data": {
+          "humidity_low": "Low limit",
+          "humidity_optimal_min": "Optimal minimum",
+          "humidity_optimal_max": "Optimal maximum",
+          "humidity_high": "High limit",
+          "humidity_low_alert_minutes": "Low alert delay",
+          "humidity_high_alert_minutes": "High alert delay"
+        }
+      }
+    },
+    "error": {
+      "invalid_name": "Enter a name for this zone.",
+      "no_sources": "Select a temperature sensor, a humidity sensor, or both.",
+      "invalid_limits": "The limits are out of order or the chart range does not contain all limits."
+    }
+  },
+  "entity": {
+    "sensor": {
+      "overall_status": {
+        "name": "Overall status",
+        "state": {
+          "optimal": "Optimal",
+          "acceptable": "Acceptable",
+          "low": "Low",
+          "high": "High"
+        }
+      },
+      "temperature_status": {
+        "name": "Temperature status",
+        "state": {
+          "optimal": "Optimal",
+          "acceptable": "Acceptable",
+          "low": "Low",
+          "high": "High"
+        }
+      },
+      "humidity_status": {
+        "name": "Humidity status",
+        "state": {
+          "optimal": "Optimal",
+          "acceptable": "Acceptable",
+          "low": "Low",
+          "high": "High"
+        }
+      }
+    },
+    "switch": {
+      "alerts": { "name": "Alerts" }
+    },
+    "number": {
+      "temperature_low": { "name": "Temperature low limit" },
+      "temperature_optimal_min": { "name": "Temperature optimal minimum" },
+      "temperature_optimal_max": { "name": "Temperature optimal maximum" },
+      "temperature_high": { "name": "Temperature high limit" },
+      "temperature_chart_min": { "name": "Temperature chart minimum" },
+      "temperature_chart_max": { "name": "Temperature chart maximum" },
+      "temperature_low_alert_minutes": { "name": "Low temperature alert delay" },
+      "temperature_high_alert_minutes": { "name": "High temperature alert delay" },
+      "humidity_low": { "name": "Humidity low limit" },
+      "humidity_optimal_min": { "name": "Humidity optimal minimum" },
+      "humidity_optimal_max": { "name": "Humidity optimal maximum" },
+      "humidity_high": { "name": "Humidity high limit" },
+      "humidity_low_alert_minutes": { "name": "Low humidity alert delay" },
+      "humidity_high_alert_minutes": { "name": "High humidity alert delay" }
+    }
+  }
+}

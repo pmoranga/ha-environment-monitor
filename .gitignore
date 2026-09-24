@@ -5,3 +5,13 @@ home-assistant_v2.db*
 .storage/
 secrets.yaml
 *.log
+
+# Generated deployment artifacts and local zone inventory
+__pycache__/
+*.py[cod]
+.pytest_cache/
+.ruff_cache/
+
+# Leftovers from pre-integration generator installations.
+build/
+config/zones.yaml
