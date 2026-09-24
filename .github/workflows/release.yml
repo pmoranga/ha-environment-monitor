@@ -17,6 +17,7 @@ jobs:
         uses: actions/checkout@v7
 
       - name: Publish release
+        id: publish
         env:
           GH_TOKEN: ${{ github.token }}
         run: >-
@@ -24,3 +25,16 @@ jobs:
           --verify-tag
           --generate-notes
           --title "$GITHUB_REF_NAME"
+
+      - name: Write release summary
+        if: always()
+        run: |
+          {
+            echo "## Environment Monitor $GITHUB_REF_NAME"
+            echo
+            echo "| Check | Result |"
+            echo "| --- | --- |"
+            echo "| GitHub release | ${{ steps.publish.outcome == 'success' && '✅ Published' || '❌ Failed' }} |"
+            echo
+            echo "[View release](https://github.com/${{ github.repository }}/releases/tag/$GITHUB_REF_NAME)"
+          } >> "$GITHUB_STEP_SUMMARY"
