@@ -64,13 +64,9 @@ jobs:
 
       - name: Validate with HACS
         id: hacs
-        # HACS currently misreads some valid single-integration repositories.
-        # Keep the result visible in the summary until the upstream bug is fixed.
-        continue-on-error: true
         uses: hacs/action@main
         with:
           category: integration
-          ignore: brands
 
       - name: Write HACS summary
         if: always()
@@ -80,12 +76,8 @@ jobs:
             echo
             echo "| Check | Result |"
             echo "| --- | --- |"
-            echo "| HACS repository | ${{ steps.hacs.outcome == 'success' && '✅ Passed' || '⚠️ Upstream validator issue' }} |"
+            echo "| HACS repository | ${{ steps.hacs.outcome == 'success' && '✅ Passed' || '❌ Failed' }} |"
           } >> "$GITHUB_STEP_SUMMARY"
-          if [[ "${{ steps.hacs.outcome }}" != "success" ]]; then
-            echo >> "$GITHUB_STEP_SUMMARY"
-            echo "See [hacs/integration#5497](https://github.com/hacs/integration/issues/5497)." >> "$GITHUB_STEP_SUMMARY"
-          fi
 
   hassfest:
     name: Hassfest
