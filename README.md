@@ -16,6 +16,10 @@ Each zone can monitor temperature, humidity, or both. The integration creates a
 device for the zone containing status sensors, editable threshold and delay
 numbers, and an alerts switch.
 
+The installation wizard is localized for English, German, Spanish, French,
+Italian, Dutch, Polish, Brazilian Portuguese, Russian, Simplified Chinese,
+Danish, Finnish, Norwegian Bokmål, and Swedish.
+
 ## Install
 
 ### HACS
