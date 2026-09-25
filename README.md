@@ -2,7 +2,6 @@
 
 [![GitHub Release](https://img.shields.io/github/v/release/pmoranga/ha-environment-monitor?style=for-the-badge)](https://github.com/pmoranga/ha-environment-monitor/releases)
 [![Validation](https://img.shields.io/github/actions/workflow/status/pmoranga/ha-environment-monitor/validate.yml?branch=main&style=for-the-badge&label=validation)](https://github.com/pmoranga/ha-environment-monitor/actions/workflows/validate.yml)
-[![GitHub Activity](https://img.shields.io/github/commit-activity/y/pmoranga/ha-environment-monitor?style=for-the-badge)](https://github.com/pmoranga/ha-environment-monitor/commits/main)
 [![License](https://img.shields.io/github/license/pmoranga/ha-environment-monitor?style=for-the-badge)](LICENSE)
 
 [![HACS](https://img.shields.io/badge/HACS-Custom-orange.svg?style=for-the-badge)](https://hacs.xyz)
