@@ -2,9 +2,9 @@
 
 [![GitHub Release](https://img.shields.io/github/v/release/pmoranga/ha-environment-monitor?style=for-the-badge)](https://github.com/pmoranga/ha-environment-monitor/releases)
 [![Validation](https://img.shields.io/github/actions/workflow/status/pmoranga/ha-environment-monitor/validate.yml?branch=main&style=for-the-badge&label=validation)](https://github.com/pmoranga/ha-environment-monitor/actions/workflows/validate.yml)
-[![License](https://img.shields.io/github/license/pmoranga/ha-environment-monitor)](LICENSE)
+[![License](https://img.shields.io/github/license/pmoranga/ha-environment-monitor?style=for-the-badge)](LICENSE)
 
-[![HACS](https://img.shields.io/badge/HACS-Custom-orange.svg?style=for-the-badge)](https://hacs.xyz)
+[![HACS](https://img.shields.io/badge/HACS-Default-orange.svg?style=for-the-badge)](https://hacs.xyz)
 [![Maintained](https://img.shields.io/badge/maintained-yes-brightgreen?style=for-the-badge)](https://github.com/pmoranga/ha-environment-monitor/commits/main)
 [![Home Assistant](https://img.shields.io/badge/Home%20Assistant-2025.9%2B-blue?style=for-the-badge)](https://www.home-assistant.io/)
 
@@ -24,13 +24,25 @@ Danish, Finnish, Norwegian Bokmål, and Swedish.
 
 ### HACS
 
+Environment Monitor is included in the HACS default repository list.
+
 [![Open your Home Assistant instance and open this repository in HACS.](https://my.home-assistant.io/badges/hacs_repository.svg)](https://my.home-assistant.io/redirect/hacs_repository/?owner=pmoranga&repository=ha-environment-monitor&category=integration)
 
-1. In HACS, open **Integrations**.
-2. Open the three-dot menu and choose **Custom repositories**.
-3. Add `https://github.com/pmoranga/ha-environment-monitor` as an
-   **Integration** repository.
-4. Install **Environment Monitor** and restart Home Assistant.
+1. Open **HACS** from the Home Assistant sidebar.
+2. Search for **Environment Monitor** and open its repository page.
+3. Choose **Download** and confirm the download.
+4. Restart Home Assistant, then follow [Add a zone](#add-a-zone-with-the-installation-wizard)
+   below to configure the integration.
+
+#### Custom repository fallback
+
+If Environment Monitor does not appear in HACS search, you can add it manually:
+
+1. In HACS, open the three-dot menu and choose **Custom repositories**.
+2. Add `https://github.com/pmoranga/ha-environment-monitor` with the type
+   **Integration**, then choose **Add**.
+3. Find **Environment Monitor** in HACS and follow the download, restart, and
+   configuration steps above.
 
 ### Manual
 
